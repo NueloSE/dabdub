@@ -1,6 +1,7 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { SettlementModule } from './settlement/settlement.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -38,6 +39,12 @@ import { AuthModule } from './auth/auth.module';
     DatabaseModule,
     LoggerModule,
     ScheduleModule.forRoot(),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
     BullModule.forRootAsync({
       imports: [GlobalConfigModule],
       useFactory: async (configService: GlobalConfigService) => ({
@@ -50,6 +57,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     NotificationModule,
     SettlementModule,
+    PublicModule,
   ],
   controllers: [AppController],
   providers: [AppService],
